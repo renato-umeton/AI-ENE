@@ -1,4 +1,11 @@
-# AI‑ENE End‑to‑End (Head & Neck) — Segmentation + ENE Classification
+# Automated Lymph Node and Extranodal Extension Assessment Improves Risk Stratification in Oropharyngeal Carcinoma
+
+**Abstract:** Extranodal extension (ENE) is a biomarker in oropharyngeal carcinoma (OPC) but can only be diagnosed via surgical pathology. We applied an automated artificial intelligence (AI) imaging platform integrating lymph node auto‑segmentation with ENE prediction to determine the prognostic value of the number of predicted ENE nodes. In a multisite, retrospective cohort of 1,733 OPC patients treated with definitive radiation therapy, malignant lymph nodes were segmented with a validated deep learning model, then processed with a validated ENE prediction model to compute the number of AI‑predicted ENE (AI‑ENE) nodes per patient. AI‑ENE node number was independently associated with poorer distant control and overall survival, and incorporating AI‑ENE into existing Radiation Therapy Oncology Group (RTOG‑0129) and AJCC 8th edition staging systems improved risk stratification, particularly among HPV‑negative patients. Automated AI‑ENE node number thus represents a novel risk factor for OPC that may better inform pretreatment risk stratification and decision making.
+
+![AI‑ENE framework overview](ai-ene-framework.png)
+
+
+
 
 ## Overview
 This repository provides an end‑to‑end pipeline to:
@@ -64,7 +71,7 @@ Notes:
     - `AI_ENE/nnunet_segmentation/nnUNet_trained_model/nnUNet/Task501_ENE/fold_0/model_final_checkpoint.model.pkl`
 
   - `AI_ENE/nnunet_segmentation/reg_img_template/template_image.nrrd`
-    - This folder is kept as a placeholder in git; download the template locally (not tracked).
+    
 
 
 
@@ -102,17 +109,13 @@ Notes (non‑DICOM):
 - `--input-format {dicom|nrrd|nii|nii.gz}`: input modality. If omitted, uses `data.input_data_format` from `nnunet_segmentation/src/config.yaml` (default `dicom`).
 - `--dicom-dir PATH` (legacy): DICOM input directory. Ignored when `--input-dir` is provided.
 - `--input-data-dir PATH` (legacy): non‑DICOM input directory (NRRD/NIfTI). Ignored when `--input-dir` is provided.
-- `--output-dir PATH`: base output directory for AI‑ENE results (default: `AI_ENE/output`).
+- `--output-dir PATH`: base output directory for AI‑ENE results.
 - `--gpu {cpu|auto|0}`: device selection (default: `cpu`). Use a CUDA‑enabled setup for GPU.
 - `--include-short-axes`: compute short/long axis metrics and include them in the CSV.
 - `--limit N`: maximum number of cases to process in the classification step (does not limit nnU‑Net preprocessing/segmentation).
 - `--fg-labels {2|any|1,2}`: foreground label(s) in segmentation; `any` treats any nonzero voxel as foreground (default: `2`).
 
-Notes:
-- The end-to-end wrapper runs the classification step with verbose logging enabled by default, so you will see detailed progress and a run log saved alongside outputs.
-- The runner always uses a fresh, isolated workspace per run under `nnunet_segmentation/runs/run_YYYYMMDD_HHMMSS/` to avoid reusing intermediates across runs.
-  - nnU‑Net images (inputs to classifier): `nnunet_segmentation/runs/run_YYYYMMDD_HHMMSS/nnUNet_output/nnUNet_raw_data/Task501_ENE/imagesTs/`
-  - nnU‑Net predictions (segmentations): `nnunet_segmentation/runs/run_YYYYMMDD_HHMMSS/nnUNet_output/nnUNet_raw_data/Task501_ENE/predsTs/`
+
 
 
 
@@ -153,45 +156,33 @@ Prerequisites for GPU on host:
 - NVIDIA driver installed
 - NVIDIA Container Toolkit installed (so Docker supports `--gpus all`)
 
-Quick checks:
-```bash
-nvidia-smi
-docker run --rm --gpus all nvidia/cuda:11.8.0-runtime-ubuntu22.04 nvidia-smi
-```
 
 Notes (classification on GPU):
 - The Docker image includes a GPU-capable TensorFlow (2.13). Classification uses GPU when you run with `--gpus all` and pass `--gpu 0`.
 - To force CPU classification, pass `--gpu cpu`.
 
-## Running Components Separately
 
-### nnU‑Net segmentation only
-```bash
-conda activate ai-ene
-cd nnunet_segmentation
-python src/run_pipeline.py
-```
-Outputs:
-- Images: `nnUNet_output/nnUNet_raw_data/Task501_ENE/imagesTs/{case_id}_0000.nii.gz`
-- Segmentations: `nnUNet_output/nnUNet_raw_data/Task501_ENE/predsTs/{case_id}.nii.gz`
 
-### AI‑ENE classification only(Start from Nifti inputs)
-```bash
-conda activate ai-ene
-python ENE_inference/ene_classification.py \
-  --seg-dir nnunet_segmentation/nnUNet_output/nnUNet_raw_data/Task501_ENE/predsTs \
-  --img-dir nnunet_segmentation/nnUNet_output/nnUNet_raw_data/Task501_ENE/imagesTs \
-  --output-dir output \
-  --gpu cpu --verbose --include-short-axes
+
+
+## Citation 
+
+If you use part of this repository in your research, please cite the corresponding AI‑ENE paper.  
+Replace the placeholder below with the final citation text and BibTeX once available.
+
+```text
+TBD: Full citation for the AI‑ENE paper (authors, title, venue, year).
 ```
 
-Outputs (classification):
-- A timestamped CSV under `AI_ENE/output/prediction_list/predictions_{YYYYMMDD_HHMMSS}/prediction_list_with_volume_short_axis_target_cohort_{YYYYMMDD_HHMMSS}.csv`
-- Per-node crops and intermediates under `output_{YYYYMMDD_HHMMSS}/` and `label_croptop_172x172x76_{YYYYMMDD_HHMMSS}/`
+```bibtex
+@article{TBD-ai-ene,
+  title   = {TBD: Title of the AI-ENE paper},
+  author  = {TBD},
+  journal = {TBD},
+  year    = {TBD}
+}
+```
 
-## Input requirements for AI‑ENE
-- Images: `{case_id}_0000.nii.gz`
-- Segmentations: `{case_id}.nii` or `{case_id}.nii.gz`
-- Images and segmentations must be co‑registered (same origin, spacing, direction)
-- Default LN foreground label is `2`; if your masks use different labels, pass `--fg-labels any` or a list like `--fg-labels 1,2`
+## Licene 
+CC BY-NC-ND 4.0
 
