@@ -164,11 +164,10 @@ Notes (classification on GPU):
 
 ## Citation 
 
-If you use part of this repository in your research, please cite the corresponding AI‑ENE paper.  
-Replace the placeholder below with the final citation text and BibTeX once available.
+If you use this repository in your research, please cite the corresponding AI‑ENE paper.  
 
 ```text
-TBD: Full citation for the AI‑ENE paper (authors, title, venue, year).
+Automated Lymph Node and Extranodal Extension Assessment Improves Risk Stratification in Oropharyngeal Carcinoma, https://ascopubs.org/doi/10.1200/JCO-24-02679
 ```
 
 ```bibtex
