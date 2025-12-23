@@ -180,6 +180,6 @@ TBD: Full citation for the AI‑ENE paper (authors, title, venue, year).
 }
 ```
 
-## Licene 
+## License 
 CC BY-NC-ND 4.0
 
