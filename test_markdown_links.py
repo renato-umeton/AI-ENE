@@ -79,13 +79,13 @@ def check_relative_path(base_path: Path, relative_url: str) -> Tuple[bool, str]:
         return False, str(resolved_path)
 
 
-def check_external_url(url: str, timeout: int = 5) -> Tuple[bool, str]:
+def check_external_url(url: str, timeout: int = 10) -> Tuple[bool, str]:
     """
     Check if an external URL is accessible.
     Returns (accessible, status_message)
     """
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; LinkChecker/1.0)'})
         with urllib.request.urlopen(req, timeout=timeout) as response:
             return True, f"HTTP {response.status}"
     except urllib.error.HTTPError as e:
