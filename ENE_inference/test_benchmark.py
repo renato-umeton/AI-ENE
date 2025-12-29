@@ -73,14 +73,26 @@ class TestBenchmarkMetrics(unittest.TestCase):
     
     def test_sensitivity_specificity(self):
         """Test sensitivity and specificity computation."""
-        # Perfect prediction
+        # Test case 1: Perfect positive prediction (all true positives)
+        # When both pred and gt are all ones, we have:
+        # TP = 100 (all predicted positives match ground truth)
+        # TN = 0 (no true negatives)
+        # FP = 0 (no false positives)
+        # FN = 0 (no false negatives)
+        # Sensitivity = TP / (TP + FN) = 100 / 100 = 1.0
         pred = np.ones((10, 10), dtype=np.uint8)
         gt = np.ones((10, 10), dtype=np.uint8)
         
         sens, spec = self.benchmark.compute_sensitivity_specificity(pred, gt)
         self.assertAlmostEqual(sens, 1.0, places=5)
         
-        # All negative prediction
+        # Test case 2: Perfect negative prediction (all true negatives)
+        # When both pred and gt are all zeros, we have:
+        # TP = 0 (no true positives)
+        # TN = 100 (all predicted negatives match ground truth)
+        # FP = 0 (no false positives)
+        # FN = 0 (no false negatives)
+        # Specificity = TN / (TN + FP) = 100 / 100 = 1.0
         pred = np.zeros((10, 10), dtype=np.uint8)
         gt = np.zeros((10, 10), dtype=np.uint8)
         

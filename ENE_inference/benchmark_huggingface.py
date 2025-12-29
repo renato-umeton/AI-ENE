@@ -175,6 +175,14 @@ class HuggingFaceBenchmark:
         """
         Run AI-ENE inference on a single case.
         
+        NOTE: This is a simplified demonstration. For full AI-ENE inference,
+        the complete pipeline from ene_classification.py should be used,
+        including node splitting, cropping, preprocessing, and prediction.
+        
+        This method primarily tracks inference timing and validates data loading.
+        For production benchmarking, integrate with the full ENE classification
+        pipeline or implement complete preprocessing and inference logic.
+        
         Args:
             image_path: Path to input image
             seg_path: Path to segmentation
@@ -202,8 +210,16 @@ class HuggingFaceBenchmark:
             image_array = sitk.GetArrayFromImage(image)
             seg_array = sitk.GetArrayFromImage(seg)
             
-            # Simple preprocessing (matches ene_classification.py approach)
-            # This is a simplified version - full pipeline is more complex
+            # NOTE: Full AI-ENE inference would include:
+            # 1. Node splitting via watershed
+            # 2. Per-node cropping and preprocessing
+            # 3. Normalization and dilation
+            # 4. Dual-input model prediction (main + small crops)
+            # 5. ENE classification and volume calculation
+            #
+            # This simplified version measures loading/model time only
+            # For accurate benchmarking, use the complete ene_classification.py pipeline
+            
             inference_time = time.time() - start_time
             
             return {
@@ -211,7 +227,8 @@ class HuggingFaceBenchmark:
                 "inference_time": inference_time,
                 "success": True,
                 "image_shape": image_array.shape,
-                "seg_shape": seg_array.shape
+                "seg_shape": seg_array.shape,
+                "note": "Simplified inference - use full pipeline for production benchmarking"
             }
         except Exception as e:
             logging.error(f"AI-ENE inference failed: {e}")

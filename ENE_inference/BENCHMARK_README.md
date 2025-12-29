@@ -2,6 +2,16 @@
 
 This directory contains tools for benchmarking AI-ENE against state-of-the-art HuggingFace models.
 
+## Important Note
+
+This benchmarking system provides a **framework** for comparing AI-ENE against HuggingFace models. The current implementation focuses on:
+- Infrastructure for model loading and inference
+- Metric computation (Dice, IoU, sensitivity, specificity)
+- Result generation and reporting
+- Leaderboard tracking
+
+For **production benchmarking**, the AI-ENE inference should use the complete pipeline from `ene_classification.py`, including node splitting, per-node preprocessing, and full model inference. The current simplified inference serves as a template for integration.
+
 ## Files
 
 - `benchmark_huggingface.py` - Core benchmarking module
