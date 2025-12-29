@@ -1,0 +1,4 @@
+case_id,model,inference_time,success,image_shape,seg_shape
+case_001,AI-ENE,2.812190663132464,True,"(32, 64, 64)","(32, 64, 64)"
+case_002,AI-ENE,2.096582900911318,True,"(32, 64, 64)","(32, 64, 64)"
+case_003,AI-ENE,2.562195475589556,True,"(32, 64, 64)","(32, 64, 64)"
