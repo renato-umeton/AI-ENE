@@ -39,7 +39,7 @@ Examples:
   python run_benchmark.py --config my_config.yaml --image-dir ./data/images --seg-dir ./data/segs
   
   # Run with specific HuggingFace models
-  python run_benchmark.py --image-dir ./data/images --seg-dir ./data/segs \\
+  python run_benchmark.py --image-dir ./data/images --seg-dir ./data/segs \\\\
     --hf-models microsoft/swinv2-base-patch4-window12-192-22k facebook/sam-vit-base
   
   # Limit to 5 test cases
