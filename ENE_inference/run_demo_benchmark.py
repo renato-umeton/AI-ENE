@@ -23,6 +23,9 @@ def create_mock_data(output_dir="./test_data"):
     """Create mock medical images and segmentations for testing."""
     print("Creating mock test data...")
     
+    # Use fixed random seed for reproducibility
+    np.random.seed(42)
+    
     image_dir = os.path.join(output_dir, "images")
     seg_dir = os.path.join(output_dir, "segmentations")
     
@@ -70,14 +73,13 @@ def create_mock_model():
     try:
         import h5py
         import tensorflow as tf
-        from tensorflow import keras
         
-        # Create a minimal model
-        model = keras.Sequential([
-            keras.layers.Input(shape=(64, 64, 32, 1)),
-            keras.layers.Conv3D(16, (3, 3, 3), activation='relu'),
-            keras.layers.GlobalAveragePooling3D(),
-            keras.layers.Dense(1, activation='sigmoid')
+        # Create a minimal model using tf.keras for consistency
+        model = tf.keras.Sequential([
+            tf.keras.layers.Input(shape=(64, 64, 32, 1)),
+            tf.keras.layers.Conv3D(16, (3, 3, 3), activation='relu'),
+            tf.keras.layers.GlobalAveragePooling3D(),
+            tf.keras.layers.Dense(1, activation='sigmoid')
         ])
         
         model.save(model_path)
@@ -103,6 +105,10 @@ def run_demo_benchmark():
     print("\n" + "="*80)
     print("RUNNING DEMO BENCHMARK")
     print("="*80 + "\n")
+    
+    # Mock inference time range (in seconds)
+    MOCK_INFERENCE_TIME_MIN = 1.5
+    MOCK_INFERENCE_TIME_MAX = 3.0
     
     # Create mock data
     image_dir, seg_dir = create_mock_data()
@@ -154,7 +160,7 @@ def run_demo_benchmark():
         results.append({
             'case_id': case_id,
             'model': 'AI-ENE',
-            'inference_time': np.random.uniform(1.5, 3.0),
+            'inference_time': np.random.uniform(MOCK_INFERENCE_TIME_MIN, MOCK_INFERENCE_TIME_MAX),
             'success': True,
             'image_shape': '(32, 64, 64)',
             'seg_shape': '(32, 64, 64)',
