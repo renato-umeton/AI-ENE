@@ -60,3 +60,9 @@ nnunet_segmentation/README.md
 
 # Benchmark results (generated output)
 benchmark_results/
+# But keep the example leaderboard
+!benchmark_results/leaderboard.html
+
+# Test data (temporary)
+ENE_inference/test_data/
+ENE_inference/ene_model/demo_model.h5
