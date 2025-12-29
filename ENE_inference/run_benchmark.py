@@ -157,10 +157,15 @@ Examples:
         print("\nGenerating summary report...")
         summary = benchmark.generate_summary_report(df_results)
         
+        # Generate HTML leaderboard
+        print("\nGenerating HTML leaderboard...")
+        html_path = benchmark.generate_html_leaderboard(df_results, summary)
+        
         print("\n" + "="*80)
         print("BENCHMARKING COMPLETE!")
         print("="*80)
         print(f"Results saved to: {output_dir}")
+        print(f"HTML leaderboard: {html_path}")
         print("="*80 + "\n")
         
         return 0

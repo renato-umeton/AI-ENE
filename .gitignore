@@ -57,3 +57,6 @@ nnunet_segmentation/main_data/reg_img_template/**
 !nnunet_segmentation/main_data/reg_img_template/**/.gitkeep
 ENE_inference/README.md
 nnunet_segmentation/README.md
+
+# Benchmark results (generated output)
+benchmark_results/

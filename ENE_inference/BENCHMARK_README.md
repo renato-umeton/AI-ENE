@@ -90,6 +90,14 @@ Benchmark results are saved in `benchmark_results/` (configurable):
 
 - `benchmark_results_[timestamp].csv` - Detailed per-case results
 - `benchmark_summary_[timestamp].json` - Summary statistics
+- **`leaderboard.html`** - Interactive HTML leaderboard showing AI-ENE's ranking
+
+The HTML leaderboard provides:
+- Visual ranking of all benchmarked models
+- AI-ENE highlighted with its position
+- Success rates and inference times
+- Sortable comparison table
+- Responsive design for easy viewing
 
 ## HuggingFace Models
 

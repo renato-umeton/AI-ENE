@@ -213,7 +213,10 @@ Edit `ENE_inference/benchmark_config.yaml` to customize:
 Results are saved in `benchmark_results/` and include:
 - `benchmark_results_[timestamp].csv` - Detailed per-case results
 - `benchmark_summary_[timestamp].json` - Summary statistics
+- **`leaderboard.html`** - Interactive HTML leaderboard with AI-ENE highlighted
 - Performance comparison charts (when enabled)
+
+**📊 [View Live Leaderboard](benchmark_results/leaderboard.html)** - See how AI-ENE ranks against HuggingFace models
 
 ### Tracked Metrics
 

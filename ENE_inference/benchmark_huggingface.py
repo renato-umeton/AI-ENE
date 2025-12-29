@@ -437,6 +437,402 @@ class HuggingFaceBenchmark:
         logging.info("="*80)
         
         return summary
+    
+    def generate_html_leaderboard(
+        self,
+        df_results: pd.DataFrame,
+        summary: Dict[str, Any],
+        output_filename: str = "leaderboard.html"
+    ) -> str:
+        """
+        Generate an HTML leaderboard showing AI-ENE's ranking compared to other models.
+        
+        Args:
+            df_results: DataFrame with benchmark results
+            summary: Summary statistics dictionary
+            output_filename: Name of the output HTML file
+            
+        Returns:
+            Path to the generated HTML file
+        """
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Sort models by average inference time (lower is better)
+        model_rankings = []
+        for model_name, stats in summary.items():
+            if stats['avg_inference_time'] is not None:
+                model_rankings.append({
+                    'model': model_name,
+                    'success_rate': stats['success_rate'],
+                    'avg_inference_time': stats['avg_inference_time'],
+                    'std_inference_time': stats['std_inference_time'],
+                    'total_cases': stats['total_cases'],
+                    'successful_cases': stats['successful_cases']
+                })
+        
+        # Sort by success rate (descending) then by inference time (ascending)
+        model_rankings.sort(key=lambda x: (-x['success_rate'], x['avg_inference_time']))
+        
+        # Find AI-ENE's rank
+        ai_ene_rank = None
+        for idx, entry in enumerate(model_rankings):
+            if 'AI-ENE' in entry['model']:
+                ai_ene_rank = idx + 1
+                break
+        
+        # Generate HTML
+        html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-ENE Benchmark Leaderboard</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }}
+        
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }}
+        
+        .header h1 {{
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }}
+        
+        .header p {{
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }}
+        
+        .timestamp {{
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }}
+        
+        .leaderboard {{
+            padding: 2rem;
+        }}
+        
+        .leaderboard-table {{
+            width: 100%;
+            border-collapse: collapse;
+        }}
+        
+        .leaderboard-table thead {{
+            background: #f8f9fa;
+        }}
+        
+        .leaderboard-table th {{
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }}
+        
+        .leaderboard-table th.rank {{
+            width: 80px;
+            text-align: center;
+        }}
+        
+        .leaderboard-table td {{
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }}
+        
+        .leaderboard-table tr:hover {{
+            background: #f8f9fa;
+        }}
+        
+        .leaderboard-table tr.highlight {{
+            background: linear-gradient(90deg, #fff3cd 0%, #ffffff 100%);
+            border-left: 4px solid #ffc107;
+        }}
+        
+        .leaderboard-table tr.highlight:hover {{
+            background: linear-gradient(90deg, #ffe69c 0%, #f8f9fa 100%);
+        }}
+        
+        .rank-badge {{
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }}
+        
+        .rank-1 {{
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #856404;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }}
+        
+        .rank-2 {{
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #495057;
+            box-shadow: 0 4px 12px rgba(192, 192, 192, 0.4);
+        }}
+        
+        .rank-3 {{
+            background: linear-gradient(135deg, #cd7f32 0%, #e5a668 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
+        }}
+        
+        .rank-other {{
+            background: #e9ecef;
+            color: #6c757d;
+        }}
+        
+        .model-name {{
+            font-weight: 600;
+            color: #212529;
+        }}
+        
+        .ai-ene-badge {{
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }}
+        
+        .metric {{
+            font-family: 'Courier New', monospace;
+            color: #495057;
+        }}
+        
+        .success-rate {{
+            font-weight: 600;
+        }}
+        
+        .success-100 {{
+            color: #28a745;
+        }}
+        
+        .success-high {{
+            color: #5cb85c;
+        }}
+        
+        .success-medium {{
+            color: #ffc107;
+        }}
+        
+        .success-low {{
+            color: #dc3545;
+        }}
+        
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            background: #f8f9fa;
+        }}
+        
+        .stat-card {{
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }}
+        
+        .stat-card h3 {{
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+        
+        .stat-card .value {{
+            font-size: 2rem;
+            font-weight: 700;
+            color: #212529;
+        }}
+        
+        .stat-card .label {{
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }}
+        
+        .footer {{
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }}
+        
+        .footer a {{
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }}
+        
+        .footer a:hover {{
+            text-decoration: underline;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 AI-ENE Benchmark Leaderboard</h1>
+            <p>Performance comparison against HuggingFace state-of-the-art models</p>
+        </div>
+        
+        <div class="timestamp">
+            Last updated: {timestamp}
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Models</h3>
+                <div class="value">{len(model_rankings)}</div>
+                <div class="label">Benchmarked</div>
+            </div>
+            <div class="stat-card">
+                <h3>AI-ENE Rank</h3>
+                <div class="value">#{ai_ene_rank if ai_ene_rank else 'N/A'}</div>
+                <div class="label">Overall Position</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Cases</h3>
+                <div class="value">{df_results['case_id'].nunique() if 'case_id' in df_results.columns else len(df_results)}</div>
+                <div class="label">Test Cases Evaluated</div>
+            </div>
+        </div>
+        
+        <div class="leaderboard">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th class="rank">Rank</th>
+                        <th>Model</th>
+                        <th>Success Rate</th>
+                        <th>Avg Inference Time</th>
+                        <th>Std Dev</th>
+                        <th>Cases</th>
+                    </tr>
+                </thead>
+                <tbody>
+"""
+        
+        # Add table rows
+        for idx, entry in enumerate(model_rankings):
+            rank = idx + 1
+            is_ai_ene = 'AI-ENE' in entry['model']
+            
+            # Determine rank badge class
+            if rank == 1:
+                rank_class = "rank-1"
+            elif rank == 2:
+                rank_class = "rank-2"
+            elif rank == 3:
+                rank_class = "rank-3"
+            else:
+                rank_class = "rank-other"
+            
+            # Determine success rate class
+            success_rate = entry['success_rate']
+            if success_rate >= 1.0:
+                success_class = "success-100"
+            elif success_rate >= 0.8:
+                success_class = "success-high"
+            elif success_rate >= 0.5:
+                success_class = "success-medium"
+            else:
+                success_class = "success-low"
+            
+            row_class = "highlight" if is_ai_ene else ""
+            ai_ene_badge = '<span class="ai-ene-badge">⭐ This Model</span>' if is_ai_ene else ''
+            
+            html_content += f"""
+                    <tr class="{row_class}">
+                        <td style="text-align: center;">
+                            <span class="rank-badge {rank_class}">{rank}</span>
+                        </td>
+                        <td>
+                            <span class="model-name">{entry['model']}</span>
+                            {ai_ene_badge}
+                        </td>
+                        <td>
+                            <span class="success-rate {success_class}">{success_rate:.1%}</span>
+                        </td>
+                        <td>
+                            <span class="metric">{entry['avg_inference_time']:.3f}s</span>
+                        </td>
+                        <td>
+                            <span class="metric">{entry['std_inference_time']:.3f}s</span>
+                        </td>
+                        <td>
+                            <span class="metric">{entry['successful_cases']}/{entry['total_cases']}</span>
+                        </td>
+                    </tr>
+"""
+        
+        html_content += """
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>
+                Generated by <a href="https://github.com/renato-umeton/AI-ENE" target="_blank">AI-ENE Benchmarking Framework</a>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+                Models sorted by success rate (descending) and inference time (ascending)
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+        
+        # Save HTML file
+        output_path = os.path.join(self.output_dir, output_filename)
+        with open(output_path, 'w') as f:
+            f.write(html_content)
+        
+        logging.info(f"HTML leaderboard saved to {output_path}")
+        
+        return output_path
 
 
 def main():
@@ -495,6 +891,10 @@ def main():
     
     # Generate summary
     summary = benchmark.generate_summary_report(df_results)
+    
+    # Generate HTML leaderboard
+    html_path = benchmark.generate_html_leaderboard(df_results, summary)
+    logging.info(f"\nHTML leaderboard available at: {html_path}")
     
     logging.info("\nBenchmarking complete!")
 
