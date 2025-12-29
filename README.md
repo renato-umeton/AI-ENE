@@ -162,6 +162,67 @@ Notes (classification on GPU):
 
 
 
+## Benchmarking
+
+AI-ENE includes benchmarking capabilities to compare performance against state-of-the-art models from HuggingFace's medical imaging leaderboards.
+
+### Setup Benchmarking Dependencies
+
+Install additional dependencies for benchmarking:
+```bash
+pip install transformers torch datasets huggingface-hub accelerate timm pillow
+```
+
+### Running Benchmarks
+
+Basic benchmark run:
+```bash
+cd ENE_inference
+python run_benchmark.py \
+  --image-dir /path/to/test/images \
+  --seg-dir /path/to/test/segmentations
+```
+
+With custom configuration:
+```bash
+python run_benchmark.py \
+  --config benchmark_config.yaml \
+  --image-dir /path/to/test/images \
+  --seg-dir /path/to/test/segmentations \
+  --max-cases 10
+```
+
+Specify HuggingFace models to compare:
+```bash
+python run_benchmark.py \
+  --image-dir /path/to/test/images \
+  --seg-dir /path/to/test/segmentations \
+  --hf-models microsoft/swinv2-base-patch4-window12-192-22k facebook/sam-vit-base
+```
+
+### Benchmark Configuration
+
+Edit `ENE_inference/benchmark_config.yaml` to customize:
+- HuggingFace models to compare against
+- Metrics to compute (Dice score, IoU, inference time, etc.)
+- Output formats and reporting options
+- Leaderboard tracking settings
+
+### Benchmark Output
+
+Results are saved in `benchmark_results/` and include:
+- `benchmark_results_[timestamp].csv` - Detailed per-case results
+- `benchmark_summary_[timestamp].json` - Summary statistics
+- Performance comparison charts (when enabled)
+
+### Tracked Metrics
+
+- **Dice Score**: Overlap between predictions and ground truth
+- **IoU (Intersection over Union)**: Segmentation accuracy
+- **Sensitivity/Specificity**: Classification performance
+- **Inference Time**: Speed comparison across models
+- **Resource Usage**: Memory and GPU utilization
+
 ## Citation 
 
 If you use this repository in your research, please cite the corresponding AI‑ENE paper.  

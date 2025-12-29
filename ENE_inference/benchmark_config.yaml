@@ -1,0 +1,105 @@
+# Benchmark Configuration for AI-ENE vs HuggingFace Models
+# This file configures which models to benchmark and evaluation settings
+
+# HuggingFace Models to Benchmark
+# These models represent state-of-the-art approaches in medical imaging
+huggingface_models:
+  # General purpose vision transformers that can be fine-tuned for medical imaging
+  - model_id: "microsoft/swinv2-base-patch4-window12-192-22k"
+    description: "Swin Transformer V2 - Strong general purpose vision model"
+    type: "vision_transformer"
+    
+  - model_id: "nvidia/mit-b0"
+    description: "SegFormer base - Efficient semantic segmentation"
+    type: "segmentation"
+    
+  - model_id: "facebook/sam-vit-base"
+    description: "Segment Anything Model - Universal segmentation"
+    type: "segmentation"
+    
+  # Medical imaging specific models (if available)
+  - model_id: "microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
+    description: "BiomedCLIP - Medical image understanding"
+    type: "medical_vision"
+
+# Benchmark Settings
+benchmark:
+  # Maximum number of cases to process (null = all)
+  max_cases: 10
+  
+  # Metrics to compute
+  metrics:
+    - dice_score
+    - iou
+    - sensitivity
+    - specificity
+    - inference_time
+    - memory_usage
+  
+  # Evaluation thresholds
+  thresholds:
+    ene_classification: 0.3  # Threshold for ENE classification
+    segmentation_confidence: 0.5
+  
+  # Output settings
+  output:
+    save_detailed_results: true
+    save_summary_plots: true
+    save_comparison_table: true
+    generate_html_report: true
+
+# Dataset paths (can be overridden via CLI)
+dataset:
+  image_dir: "./data/images"
+  seg_dir: "./data/segmentations"
+  ground_truth_dir: null  # Optional: for validation
+
+# Model paths
+models:
+  ai_ene_model: "./ene_model/0208-1531-1_DualNet.h5"
+  output_dir: "./benchmark_results"
+
+# Performance tracking
+performance:
+  # Track resource usage
+  track_memory: true
+  track_gpu_usage: true
+  track_cpu_usage: true
+  
+  # Timing granularity
+  measure_preprocessing: true
+  measure_inference: true
+  measure_postprocessing: true
+
+# Leaderboard integration
+leaderboard:
+  # Enable fetching live leaderboard data from HuggingFace
+  fetch_live_data: true
+  
+  # Relevant HuggingFace leaderboards to track
+  tracked_leaderboards:
+    - "medical-imaging-segmentation"
+    - "radiology-classification"
+    - "open-medical-llm"
+  
+  # Update frequency (in hours)
+  update_frequency: 24
+
+# Reporting
+reporting:
+  # Generate comparison charts
+  generate_charts: true
+  
+  # Chart types
+  charts:
+    - inference_time_comparison
+    - accuracy_comparison
+    - resource_usage
+    - success_rate
+  
+  # Report formats
+  formats:
+    - csv
+    - json
+    - html
+    - markdown
