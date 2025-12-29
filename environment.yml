@@ -38,4 +38,5 @@ dependencies:
       - accelerate>=0.24.0
       - timm>=0.9.0
       - pillow>=10.0.0
+      - requests>=2.31.0
 

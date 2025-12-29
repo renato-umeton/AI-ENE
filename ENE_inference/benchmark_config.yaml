@@ -2,25 +2,34 @@
 # This file configures which models to benchmark and evaluation settings
 
 # HuggingFace Models to Benchmark
-# These models represent state-of-the-art approaches in medical imaging
+# NOTE: The default models below are general-purpose vision models, not specifically
+# trained for medical imaging. They serve as baseline comparisons to demonstrate
+# benchmarking capabilities. For production use, consider:
+# 1. Using models fine-tuned on medical imaging datasets
+# 2. Consulting HuggingFace medical imaging leaderboards
+# 3. Adding domain-specific models relevant to your use case
 huggingface_models:
-  # General purpose vision transformers that can be fine-tuned for medical imaging
+  # General purpose vision transformers (baseline comparisons)
   - model_id: "microsoft/swinv2-base-patch4-window12-192-22k"
     description: "Swin Transformer V2 - Strong general purpose vision model"
     type: "vision_transformer"
+    notes: "General purpose model, not medical-specific"
     
   - model_id: "nvidia/mit-b0"
     description: "SegFormer base - Efficient semantic segmentation"
     type: "segmentation"
+    notes: "General segmentation, can be adapted to medical imaging"
     
   - model_id: "facebook/sam-vit-base"
     description: "Segment Anything Model - Universal segmentation"
     type: "segmentation"
+    notes: "Zero-shot segmentation capabilities"
     
-  # Medical imaging specific models (if available)
+  # Medical imaging specific models (recommended for production)
   - model_id: "microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
     description: "BiomedCLIP - Medical image understanding"
     type: "medical_vision"
+    notes: "Trained on biomedical data"
 
 # Benchmark Settings
 benchmark:

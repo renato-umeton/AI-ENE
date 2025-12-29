@@ -17,7 +17,6 @@ from typing import Dict, List, Optional, Tuple, Any
 import numpy as np
 import pandas as pd
 import SimpleITK as sitk
-from scipy.ndimage import binary_dilation
 
 # Setup logging
 logging.basicConfig(
@@ -51,12 +50,15 @@ class HuggingFaceBenchmark:
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
         
-        # Default HuggingFace models for medical image segmentation
-        # These are representative models from popular medical imaging tasks
+        # Default HuggingFace models for benchmarking
+        # NOTE: These are general-purpose vision models, not specifically trained
+        # for medical imaging. They serve as baseline comparisons. For production
+        # benchmarking, consider using models fine-tuned on medical imaging datasets
+        # or configure custom models via the benchmark_config.yaml file.
         self.hf_models = hf_models or [
             "microsoft/swinv2-base-patch4-window12-192-22k",  # General purpose vision transformer
-            "nvidia/mit-b0",  # SegFormer base model
-            "facebook/sam-vit-base",  # Segment Anything Model
+            "nvidia/mit-b0",  # SegFormer base model for semantic segmentation
+            "facebook/sam-vit-base",  # Segment Anything Model - universal segmentation
         ]
         
         self.results = []
