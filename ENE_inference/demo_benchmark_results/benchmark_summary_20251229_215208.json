@@ -1,0 +1,11 @@
+{
+  "AI-ENE": {
+    "total_cases": 3,
+    "successful_cases": 3,
+    "success_rate": 1.0,
+    "avg_inference_time": 2.257522831855094,
+    "std_inference_time": 0.591031557052452,
+    "min_inference_time": 1.7924667757888804,
+    "max_inference_time": 2.9226135142736087
+  }
+}
